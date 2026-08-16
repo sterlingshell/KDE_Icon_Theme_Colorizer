@@ -30,7 +30,9 @@ VARIANTS = {
 }
 
 # 动态加载外部配置文件
-TOML_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.toml")
+TOML_PATH = os.getenv("KDE_COLORIZER_CONFIG")
+if not TOML_PATH:
+    TOML_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config.toml")
 
 if not os.path.exists(TOML_PATH):
     print(f"错误: 未在项目根目录下找到配置文件 {TOML_PATH}")

@@ -50,9 +50,39 @@ python3 src/main.py /path/to/Papirus/64x64/places
    ```
 3. 在 KDE 系统设置中选择 `Papirus-Colorized`。
 
-### 方案 B：Nix 原生打包 (推荐)
-你可以将本项目作为一个 Nix Derivation，通过 `overrideAttrs` 或 `overlay` 的方式，在 `postInstall` 阶段运行此脚本处理 `papirus-icon-theme`。
-> Nix 包装支持正在开发中，敬请期待。
+### 方案 B：Nix 原生集成 (推荐)
+
+本项目提供了完整的 Flake 支持和 Overlay。你可以直接在 NixOS 或 Home Manager 中使用它来生成已着色的图标包。
+
+#### 1. 在 Flake 中引用
+```nix
+inputs.kde-colorizer.url = "github:sterlingshell/KDE_Icon_Theme_Colorizer/nixpkg-test";
+```
+
+#### 2. 应用 Overlay 并安装图标
+在你的 NixOS 或 Home Manager 配置中：
+
+```nix
+{ pkgs, inputs, ... }: {
+  nixpkgs.overlays = [ inputs.kde-colorizer.overlays.default ];
+
+  # 系统级安装 (NixOS)
+  environment.systemPackages = [
+    (pkgs.papirus-icon-theme-colorized { themeVariant = "Papirus-Dark"; })
+  ];
+
+  # 或 用户级安装 (Home Manager)
+  home.packages = [
+    (pkgs.papirus-icon-theme-colorized { themeVariant = "Papirus-Light"; })
+  ];
+
+  # 可选：通过 Home Manager 自动设置图标主题
+  gtk.iconTheme = {
+    name = "Papirus-Light-Colorized";
+    package = pkgs.papirus-icon-theme-colorized { themeVariant = "Papirus-Light"; };
+  };
+}
+```
 
 ## 配置说明 (config.toml)
 
