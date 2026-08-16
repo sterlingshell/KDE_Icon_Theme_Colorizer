@@ -1,0 +1,13 @@
+# KDE Icon Theme Colorizer - 用户配置文件
+
+[scanner]
+# 软链接扫描匹配的关键字
+symlink_keywords = ["folder", "user"]
+
+# 实际文件(非软链接)的完全匹配白名单
+standalone_apps = [
+    "org.kde.dolphin.svg"
+]
+
+# 实际文件(非软链接)的正则表达式匹配白名单（用于匹配带通配符的图标）
+standalone_regex_patterns = []
