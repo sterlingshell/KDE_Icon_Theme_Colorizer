@@ -43,27 +43,30 @@
 
             installPhase = ''
               runHook preInstall
-              mkdir -p $out/share/icons
+              mkdir -p $out/share
 
-              # 找到实际的主题目录进行复制
-              if [ -d "share/icons/${themeVariant}" ]; then
-                cp -r share/icons/${themeVariant} $out/share/icons/${themeVariant}-Colorized
-              else
-                echo "Error: Theme variant ${themeVariant} not found."
-                exit 1
-              fi
+              # 正确复制 share/icons 目录到 $out/share/ 下
+              cp -r share/icons $out/share/
 
               # 确保文件可写以进行处理
-              chmod -R u+w $out/share/icons/${themeVariant}-Colorized
+              chmod -R u+w $out/share/icons
 
-              # 运行着色工具 (使用 --yes 参数跳过交互)
-              # 注意: 由于 Nix 环境可能没有设置好的 $HOME，脚本可能会遇到某些问题，
-              # 但我们的脚本目前只操作传入的目录，应该是安全的。
-              kde-icon-colorizer --yes $out/share/icons/${themeVariant}-Colorized
+              if [ -d "$out/share/icons/${themeVariant}" ]; then
+                # 重命名目标变体（例如 Papirus-Dark -> Papirus-Dark-Colorized）
+                mv $out/share/icons/${themeVariant} $out/share/icons/${themeVariant}-Colorized
 
-              # 修改 index.theme 使其在 KDE 设置中显示为新名称
-              if [ -f "$out/share/icons/${themeVariant}-Colorized/index.theme" ]; then
-                sed -i "s/Name=${themeVariant}/Name=${themeVariant}-Colorized/g" $out/share/icons/${themeVariant}-Colorized/index.theme
+                # 运行着色工具处理重命名后的目录
+                # 注意：此时目录下的软链接应该依然指向 $out/share/icons/Papirus/ 下的文件
+                kde-icon-colorizer --yes $out/share/icons/${themeVariant}-Colorized
+
+                # 修改 index.theme
+                if [ -f "$out/share/icons/${themeVariant}-Colorized/index.theme" ]; then
+                  sed -i "s/Name=${themeVariant}/Name=${themeVariant}-Colorized/g" $out/share/icons/${themeVariant}-Colorized/index.theme
+                fi
+              else
+                echo "Error: Theme variant ${themeVariant} not found in $out/share/icons/"
+                ls $out/share/icons/
+                exit 1
               fi
 
               runHook postInstall

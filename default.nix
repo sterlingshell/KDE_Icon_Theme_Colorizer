@@ -15,11 +15,12 @@ stdenv.mkDerivation rec {
     cp -r src/* $out/lib/kde-icon-theme-colorizer/
     cp config.toml $out/lib/kde-icon-theme-colorizer/
 
+    chmod +x $out/lib/kde-icon-theme-colorizer/main.py
+
     makeWrapper $out/lib/kde-icon-theme-colorizer/main.py $out/bin/kde-icon-colorizer \
       --prefix PYTHONPATH : "$out/lib/kde-icon-theme-colorizer" \
       --set KDE_COLORIZER_CONFIG "$out/lib/kde-icon-theme-colorizer/config.toml"
 
-    chmod +x $out/lib/kde-icon-theme-colorizer/main.py
     runHook postInstall
   '';
 

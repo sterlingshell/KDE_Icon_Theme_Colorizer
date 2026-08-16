@@ -10,4 +10,7 @@ standalone_apps = [
 ]
 
 # 实际文件(非软链接)的正则表达式匹配白名单（用于匹配带通配符的图标）
-standalone_regex_patterns = []
+standalone_regex_patterns = [
+    "^folder-.*\\.svg$",
+    "^user-.*\\.svg$"
+]
